@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:text="New Button"
         android:id="@+id/button"
-        android:layout_gravity="left|bottom" />
+        android:layout_gravity="left|bottom"
+        android:onClick="onFocusAction" />
 
 
 </FrameLayout>

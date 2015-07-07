@@ -33,6 +33,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         } catch (IOException e) {
             Log.d("ERROR", "Camera error on surfaceCreated " + e.getMessage());
         }
+
+
+
     }
 
     @Override
@@ -60,4 +63,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mCamera.stopPreview();
         mCamera.release();
     }
+
+
+
 }

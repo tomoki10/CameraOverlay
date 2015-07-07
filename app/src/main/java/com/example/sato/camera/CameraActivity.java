@@ -31,19 +31,15 @@ public class CameraActivity extends ActionBarActivity {
             Log.d("ERROR", "Failed to get camera: " + e.getMessage());
         }
 
-
         if (mCamera != null) {
-
             //カメラの描画
             mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data
             FrameLayout camera_view = (FrameLayout) findViewById(R.id.camera_view);
             camera_view.addView(mCameraView);//add the SurfaceView to the layout
-            //camera_view.addView(pv);
         }
 
 
         //btn to close the application
-
         ImageButton imgClose = (ImageButton) findViewById(R.id.imgClose);
         imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +53,14 @@ public class CameraActivity extends ActionBarActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(mCamera != null)
+            mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    camera.cancelAutoFocus();
+                    camera.autoFocus(null);
+                }
+            });
         return false;
     }
 
@@ -79,5 +83,14 @@ public class CameraActivity extends ActionBarActivity {
         int _height = trim_view.getHeight();
 
         super.onWindowFocusChanged(hasFocus);
+    }
+
+    public void onFocusAction(View view){
+        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                camera.autoFocus(null);
+            }
+        });
     }
 }
