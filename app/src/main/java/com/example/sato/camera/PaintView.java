@@ -11,7 +11,7 @@ import android.view.View;
 import java.util.ArrayList;
 
 /**
- * Created by sato on 2015/07/07.
+ * Created by tomoki on 2015/07/07.
  */
 public class PaintView extends View{
 

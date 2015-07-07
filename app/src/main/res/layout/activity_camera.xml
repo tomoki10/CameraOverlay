@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Button"
-        android:id="@+id/button"
+        android:id="@+id/button1"
         android:layout_gravity="left|bottom"
         android:onClick="onFocusAction" />
 

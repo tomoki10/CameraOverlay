@@ -1,15 +1,28 @@
 package com.example.sato.camera;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.graphics.Matrix;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class CameraActivity extends ActionBarActivity {
@@ -18,7 +31,7 @@ public class CameraActivity extends ActionBarActivity {
     private CameraView mCameraView = null;
     //private PaintView pv = null;
     private TrimView tv = null;
-    Bitmap _bmOriginal;
+    Bitmap _bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +95,47 @@ public class CameraActivity extends ActionBarActivity {
         int _width = trim_view.getWidth();
         int _height = trim_view.getHeight();
 
+        ((Button)findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                final ArrayList<Integer> _al = tv.getTrimData();
+
+                Log.d("x1",String.valueOf(_al.get(0)));
+                Log.d("y1", String.valueOf(_al.get(1)));
+                Log.d("x2", String.valueOf(_al.get(2)));
+                Log.d("y2", String.valueOf(_al.get(3)));
+
+                mCamera.takePicture(null, null, new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+
+                        //data型の画像がrotate90しているので一度保存してから切り取るか検討
+                        Rect rect = new Rect(_al.get(0), _al.get(1), _al.get(2), _al.get(3));
+
+                        //BitmapFactory.Options options = new BitmapFactory.Options();
+                        //BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(data, 0, data.length, false);
+                        //_bmp = decoder.decodeRegion(rect, options);
+
+                        _bmp = BitmapFactory.decodeByteArray(data,0,data.length);
+                        Matrix mat = new Matrix();
+                        mat.postRotate(90);
+                        _bmp = Bitmap.createBitmap(_bmp, 0, 0, _bmp.getWidth(), _bmp.getHeight(), mat, true);
+
+                        //画像の保存
+                        Calendar calendar = Calendar.getInstance();
+                        File filePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/DCIM/Camera/" +
+                                "TestData" + calendar.get(Calendar.SECOND) + ".jpg");
+                        Log.d("FilePass", String.valueOf(filePath));
+                        bmpSaved(_bmp, filePath);
+
+                    }
+                });
+
+                //setResult(RESULT_OK);
+                //finish();
+
+            }
+        });
+
         super.onWindowFocusChanged(hasFocus);
     }
 
@@ -93,4 +147,24 @@ public class CameraActivity extends ActionBarActivity {
             }
         });
     }
+
+    private void bmpSaved(Bitmap bmp, File filePath){
+        OutputStream out = null;
+        try{
+            //BitmapRegionDecoder reBmp = BitmapRegionDecoder.newInstance(data, 0, data.length, false);
+            //画像ファイルが生成できるならば
+            out = new FileOutputStream(filePath);
+            //bmp = reBmp.decodeRegion(rect, null);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+        }catch(FileNotFoundException e){
+        }catch(IOException e){
+        }finally{
+            try{
+                if(out != null)
+                    out.close();
+            }catch(IOException ex){}
+        }
+    }
+
 }

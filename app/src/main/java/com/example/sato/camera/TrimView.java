@@ -18,6 +18,7 @@ public class TrimView extends View {
     Paint paint1;
     Paint paint2;
     Paint paint3;
+    int pointSize = 15;
         
     public TrimView(Context context) {
     	super(context);
@@ -27,11 +28,11 @@ public class TrimView extends View {
         
         paint2 = new Paint();
         paint2.setStyle(Style.STROKE);
-        paint2.setColor(Color.LTGRAY);
+        paint2.setColor(Color.RED);
         
         paint3 = new Paint();
         paint3.setAntiAlias(true);
-        paint3.setColor(Color.LTGRAY);
+        paint3.setColor(Color.RED);
     }
 
         int _w = 0;
@@ -85,10 +86,10 @@ public class TrimView extends View {
         
         canvas.drawRect(sqX - sqWidth / 2, sqY - sqHeight / 2, sqX + sqWidth
                 / 2, sqY + sqHeight / 2, paint2);
-        canvas.drawCircle(sqX, sqY - sqHeight / 2, 12, paint3);
-        canvas.drawCircle(sqX, sqY + sqHeight / 2, 12, paint3);
-        canvas.drawCircle(sqX - sqWidth / 2, sqY, 12, paint3);
-        canvas.drawCircle(sqX + sqWidth / 2, sqY, 12, paint3);
+        canvas.drawCircle(sqX, sqY - sqHeight / 2, pointSize, paint3);
+        canvas.drawCircle(sqX, sqY + sqHeight / 2, pointSize, paint3);
+        canvas.drawCircle(sqX - sqWidth / 2, sqY, pointSize, paint3);
+        canvas.drawCircle(sqX + sqWidth / 2, sqY, pointSize, paint3);
     }
 
     String TouchMode = "NONE";
