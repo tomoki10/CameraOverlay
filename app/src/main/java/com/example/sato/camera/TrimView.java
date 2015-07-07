@@ -36,8 +36,10 @@ public class TrimView extends View {
 
         int _w = 0;
         int _h = 0;
+        //widthとheightの長さ
         int sqWidth = 0;
         int sqHeight = 0;
+        //中心
         int sqX = 0;
         int sqY = 0;
         
@@ -98,6 +100,7 @@ public class TrimView extends View {
         case MotionEvent.ACTION_DOWN:
             _x = e.getX();
             _y = e.getY();
+            //タッチ位置によるモードの判別
             if (sqX - sqWidth / 2+20 < _x && sqX + sqWidth / 2-20 > _x) {
                 // ｘ的にいうと触れている
                 if (sqY - sqHeight / 2+20 < _y && sqY + sqHeight / 2-20 > _y) {
@@ -131,15 +134,31 @@ public class TrimView extends View {
                 float _cdistance = culcDistance(sqX,sqY,(int)e.getX(),(int)e.getY());
                 
                 float _rate = _cdistance/_distance;
+                Log.d("rate", String.valueOf(_rate));
                 _rate = (_rate < 1.05)? _rate: 1.05f;
                 _rate = (_rate > 0.95)? _rate: 0.95f;
-                sqWidth *= _rate;
+
+                //アスペクト比を横、縦別で管理する場合
+                if( _x < sqX -100 || _x >sqX + 100)
+                    sqWidth *= _rate;
+                if( _y < sqY - 50 || _y >sqY + 50)
+                    sqHeight *= _rate;
+
                 if(sqWidth > _w){
                     sqWidth = _w;
                 }else if(sqWidth < 100){
                     sqWidth = 100;
                 }
-                sqHeight = sqWidth;
+
+                if(sqHeight > _h){
+                    sqHeight = _h;
+                }else if(sqHeight < 100){
+                    sqHeight = 100;
+                }
+
+                //アスペクト比を縦横同じ比率にする場合
+                //sqHeight = sqWidth;
+
             }
             if (sqX - sqWidth / 2 < 0) {
                 sqX = sqWidth / 2;

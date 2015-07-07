@@ -16,7 +16,8 @@ public class CameraActivity extends ActionBarActivity {
 
     private Camera mCamera = null;
     private CameraView mCameraView = null;
-    private PaintView pv = null;
+    //private PaintView pv = null;
+    private TrimView tv = null;
     Bitmap _bmOriginal;
 
     @Override
@@ -63,8 +64,19 @@ public class CameraActivity extends ActionBarActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         //トリミング領域の描画
         LinearLayout trim_view = (LinearLayout)findViewById(R.id.trim_view);
-        pv = new PaintView(this);
-        trim_view.addView(pv);
+        FrameLayout camera_view = (FrameLayout) findViewById(R.id.camera_view);
+        tv = new TrimView(getApplicationContext());
+        trim_view.addView(tv);
+        tv.sizeSet(trim_view.getWidth(),trim_view.getHeight());
+
+        //同じサイズになるのを確認
+        Log.d("trimView width",String.valueOf(trim_view.getWidth()));
+        Log.d("trimView height", String.valueOf(trim_view.getHeight()));
+        Log.d("cameraV width", String.valueOf(camera_view.getWidth()));
+        Log.d("cameraV height", String.valueOf(camera_view.getHeight()));
+
+        int _width = trim_view.getWidth();
+        int _height = trim_view.getHeight();
 
         super.onWindowFocusChanged(hasFocus);
     }
