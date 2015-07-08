@@ -2,7 +2,7 @@ package com.example.sato.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.graphics.Matrix;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +35,7 @@ public class CameraActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(com.example.sato.camera.R.layout.activity_camera);
 
         try {
             mCamera = Camera.open();//you can use open(int) to use different cameras
@@ -47,13 +46,13 @@ public class CameraActivity extends ActionBarActivity {
         if (mCamera != null) {
             //カメラの描画
             mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data
-            FrameLayout camera_view = (FrameLayout) findViewById(R.id.camera_view);
+            FrameLayout camera_view = (FrameLayout) findViewById(com.example.sato.camera.R.id.camera_view);
             camera_view.addView(mCameraView);//add the SurfaceView to the layout
         }
 
 
         //btn to close the application
-        ImageButton imgClose = (ImageButton) findViewById(R.id.imgClose);
+        ImageButton imgClose = (ImageButton) findViewById(com.example.sato.camera.R.id.imgClose);
         imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,8 +79,8 @@ public class CameraActivity extends ActionBarActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         //トリミング領域の描画
-        LinearLayout trim_view = (LinearLayout)findViewById(R.id.trim_view);
-        FrameLayout camera_view = (FrameLayout) findViewById(R.id.camera_view);
+        LinearLayout trim_view = (LinearLayout)findViewById(com.example.sato.camera.R.id.trim_view);
+        FrameLayout camera_view = (FrameLayout) findViewById(com.example.sato.camera.R.id.camera_view);
         tv = new TrimView(getApplicationContext());
         trim_view.addView(tv);
         tv.sizeSet(trim_view.getWidth(),trim_view.getHeight());
@@ -92,10 +91,10 @@ public class CameraActivity extends ActionBarActivity {
         Log.d("cameraV width", String.valueOf(camera_view.getWidth()));
         Log.d("cameraV height", String.valueOf(camera_view.getHeight()));
 
-        int _width = trim_view.getWidth();
-        int _height = trim_view.getHeight();
+        final int _width = trim_view.getWidth();
+        final int _height = trim_view.getHeight();
 
-        ((Button)findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
+        ((Button)findViewById(com.example.sato.camera.R.id.button1)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 final ArrayList<Integer> _al = tv.getTrimData();
 
@@ -108,18 +107,32 @@ public class CameraActivity extends ActionBarActivity {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
 
-                        //data型の画像がrotate90しているので一度保存してから切り取るか検討
-                        Rect rect = new Rect(_al.get(0), _al.get(1), _al.get(2), _al.get(3));
-
-                        //BitmapFactory.Options options = new BitmapFactory.Options();
-                        //BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(data, 0, data.length, false);
-                        //_bmp = decoder.decodeRegion(rect, options);
-
-                        _bmp = BitmapFactory.decodeByteArray(data,0,data.length);
+                        _bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        //回転
                         Matrix mat = new Matrix();
                         mat.postRotate(90);
+                        Log.d("Bmp width",String.valueOf(_bmp.getWidth()));
+                        Log.d("Bmp height", String.valueOf(_bmp.getHeight()));
                         _bmp = Bitmap.createBitmap(_bmp, 0, 0, _bmp.getWidth(), _bmp.getHeight(), mat, true);
 
+                        //サイズを画像に合わせる
+                        float _scaleW = (float) _width / (float) _bmp.getWidth();
+                        float _scaleH = (float) _height / (float) _bmp.getHeight();
+                        _scaleW = _scaleW > 0 ? _scaleW : 0.1f;
+                        _scaleH = _scaleH > 0 ? _scaleH : 0.1f;
+
+                        int x1 = (int)(_al.get(0)/_scaleW);
+                        int y1 = (int)(_al.get(1)/_scaleH);
+                        int x2 = (int)(_al.get(2)/_scaleW);
+                        int y2 = (int)(_al.get(3)/_scaleH);
+
+                        //画像サイズの座標を超えないように補正
+                        x1 = (x1>0) ? x1 : 0;
+                        y1 = (y1>0) ? y1 : 0;
+                        x2 = (x2 + x1 < _bmp.getWidth()) ? x2 : _bmp.getWidth() - x1;
+                        y2 = (y2 + y1 < _bmp.getHeight()) ? y2 : _bmp.getHeight() - y1;
+
+                        _bmp = Bitmap.createBitmap(_bmp, x1,y1,x2,y2);
                         //画像の保存
                         Calendar calendar = Calendar.getInstance();
                         File filePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/DCIM/Camera/" +
@@ -129,7 +142,6 @@ public class CameraActivity extends ActionBarActivity {
 
                     }
                 });
-
                 //setResult(RESULT_OK);
                 //finish();
 
