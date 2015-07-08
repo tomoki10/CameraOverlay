@@ -1,9 +1,11 @@
 package com.example.sato.camera;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +30,6 @@ public class CameraActivity extends ActionBarActivity {
 
     private Camera mCamera = null;
     private CameraView mCameraView = null;
-    //private PaintView pv = null;
     private TrimView trimView = null;
     Bitmap _bmp;
 
@@ -149,20 +150,21 @@ public class CameraActivity extends ActionBarActivity {
                             "TestData" + calendar.get(Calendar.SECOND) + ".jpg");
                     Log.d("FilePass", String.valueOf(filePath));
                     bmpSaved(_bmp, filePath);
+
+                    //画面遷移
+                    Intent intent = new Intent(getBaseContext(), ThumbnailActivity.class);
+                    //ACTION_SENDでデータを受け渡しできるようにを設定
+                    intent.setAction(Intent.ACTION_SEND);
+
+                    Uri uri = Uri.fromFile(filePath);
+
+                    //URIを送るためにEXTAR_STREAMを使用
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    startActivity(intent);
                 }
             });
         }
     };
-
-
-//    public void onFocusAction(View view){
-//        mCamera.autoFocus(new Camera.AutoFocusCallback() {
-//            @Override
-//            public void onAutoFocus(boolean success, Camera camera) {
-//                camera.autoFocus(null);
-//            }
-//        });
-//    }
 
     private void bmpSaved(Bitmap bmp, File filePath){
         OutputStream out = null;
