@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -38,6 +37,8 @@ public class CameraActivity extends ActionBarActivity {
     int _height;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +57,28 @@ public class CameraActivity extends ActionBarActivity {
             camera_view.addView(mCameraView);//add the SurfaceView to the layout
         }
 
+        //デバッグ用
+//        final Handler handler = new Handler();
+//        Timer timer = new Timer(false);
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                // TODO Auto-generated method stub
+//                handler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mCamera.cancelAutoFocus();
+//                        mCamera.autoFocus(null);
+//                    }
+//                });
+//            }
+//        }, 3000, 5000); //初回起動の遅延(3sec)と周期(3sec)指定
 
-        //btn to close the application
+        //ここまで
+
+
+
+        //閉じるボタン
         ImageButton imgClose = (ImageButton) findViewById(com.example.sato.camera.R.id.imgClose);
         imgClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +90,7 @@ public class CameraActivity extends ActionBarActivity {
 
     }
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(mCamera != null)
@@ -77,6 +99,7 @@ public class CameraActivity extends ActionBarActivity {
                 public void onAutoFocus(boolean success, Camera camera) {
                     camera.cancelAutoFocus();
                     camera.autoFocus(null);
+
                 }
             });
         return false;
@@ -100,7 +123,7 @@ public class CameraActivity extends ActionBarActivity {
         _width = trim_view.getWidth();
         _height = trim_view.getHeight();
 
-        ((Button)findViewById(com.example.sato.camera.R.id.button1)).setOnClickListener(new View.OnClickListener() {
+        ((ImageButton)findViewById(R.id.imageButton)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mCamera.autoFocus(mAutoFocusListener);
             }
@@ -184,5 +207,4 @@ public class CameraActivity extends ActionBarActivity {
             }catch(IOException ex){}
         }
     }
-
 }
