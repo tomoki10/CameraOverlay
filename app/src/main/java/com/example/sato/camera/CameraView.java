@@ -20,6 +20,12 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         super(context);
         mCamera = camera;
         mCamera.setDisplayOrientation(90);
+        //Zoom処理 デフォのサイズでは教科書の小さい数字がうまく写せないので事前に拡大表示する
+        Camera.Parameters prm = mCamera.getParameters();
+        prm.setVideoStabilization(true);            //手振れ補正
+        Log.d("Option", "getMaxZoom " + prm.getMaxZoom());
+        prm.setZoom(17);
+        mCamera.setParameters(prm);
         mHolder = getHolder();
         mHolder.addCallback(this);
     }
@@ -67,6 +73,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
         //our app has only one screen, so we'll destroy the camera in the surface
         //if you are unsing with more screens, please move this code your activity
+
         mCamera.stopPreview();
         mCamera.release();
         mCamera = null;

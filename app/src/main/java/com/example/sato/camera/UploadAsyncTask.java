@@ -24,7 +24,7 @@ public class UploadAsyncTask extends AsyncTask<String, Integer, String> {
     //AsyncTaskは基本的にActivityへTask終了の状態を渡せないので使用する
     public interface AsyncTaskCallback {
         void preExecute();
-        void postExecute(String result);
+        void postExecute(String result) throws Exception;
         void progressUpdate(int progress);
         void cancel();
     }
@@ -110,7 +110,11 @@ public class UploadAsyncTask extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        callback.postExecute(result);
+        try {
+            callback.postExecute(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if(dialog != null){
             dialog.dismiss();

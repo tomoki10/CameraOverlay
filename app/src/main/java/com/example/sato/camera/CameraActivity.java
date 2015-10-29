@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+import android.os.Handler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class CameraActivity extends ActionBarActivity {
@@ -36,8 +40,7 @@ public class CameraActivity extends ActionBarActivity {
     int _width;
     int _height;
 
-
-
+    boolean autoFocusOnOff=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,25 +61,26 @@ public class CameraActivity extends ActionBarActivity {
         }
 
         //デバッグ用
-//        final Handler handler = new Handler();
-//        Timer timer = new Timer(false);
-//        timer.scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                // TODO Auto-generated method stub
-//                handler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mCamera.cancelAutoFocus();
-//                        mCamera.autoFocus(null);
-//                    }
-//                });
-//            }
-//        }, 3000, 5000); //初回起動の遅延(3sec)と周期(3sec)指定
+        final Handler handler = new Handler();
+        Timer timer = new Timer(false);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(autoFocusOnOff) {
+                            mCamera.cancelAutoFocus();
+                            mCamera.autoFocus(null);
+                            autoFocusOnOff = false;
+                        }
+                    }
+                });
+            }
+        }, 3000, 5000); //初回起動の遅延(3sec)と周期(3sec)指定
 
         //ここまで
-
-
 
         //閉じるボタン
         ImageButton imgClose = (ImageButton) findViewById(com.example.sato.camera.R.id.imgClose);
@@ -91,6 +95,7 @@ public class CameraActivity extends ActionBarActivity {
     }
 
 
+    //現在は使っていない
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(mCamera != null)
@@ -99,7 +104,7 @@ public class CameraActivity extends ActionBarActivity {
                 public void onAutoFocus(boolean success, Camera camera) {
                     camera.cancelAutoFocus();
                     camera.autoFocus(null);
-
+                    Toast.makeText(getBaseContext(), "AutoFocus", Toast.LENGTH_SHORT).show();
                 }
             });
         return false;
@@ -134,6 +139,10 @@ public class CameraActivity extends ActionBarActivity {
 
     private Camera.AutoFocusCallback mAutoFocusListener = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {
+            if(autoFocusOnOff==false) {
+                camera.cancelAutoFocus();
+                camera.autoFocus(null);
+            }
             // 撮影
             final ArrayList<Integer> _al = trimView.getTrimData();
             mCamera.takePicture(null, null, new Camera.PictureCallback() {
@@ -207,4 +216,11 @@ public class CameraActivity extends ActionBarActivity {
             }catch(IOException ex){}
         }
     }
+
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        mCamera.setPreviewCallback(null);
+//        mCamera.release();
+//    }
 }

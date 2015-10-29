@@ -11,6 +11,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.sato.camera.FunctionCalc.FunctionTypeCheck;
+import com.example.sato.camera.FunctionCalc.LexicalAnalysis;
+import com.example.sato.camera.FunctionCalc.MathDivision;
+
 
 public class ThumbnailActivity extends ActionBarActivity {
 
@@ -39,7 +43,7 @@ public class ThumbnailActivity extends ActionBarActivity {
         imageView.setImageBitmap(_bmp);
     }
 
-    public void imageUploadOfServer(View view){
+    public void imageUploadToServer(View view){
         //非同期処理のため作成したUploadAsyncTaskクラスのインスタンスを生成
         Log.d("OPEN_FILEname", open_filepath);
         UploadAsyncTask upAsync = new UploadAsyncTask(this,
@@ -47,9 +51,26 @@ public class ThumbnailActivity extends ActionBarActivity {
             public void preExecute() {
                 //だいたいの場合ダイアログの表示などを行う
             }
-            public void postExecute(String result) {
-                //AsyncTaskの結果を受け取ってなんかする
-                Toast.makeText(getBaseContext(), result, Toast.LENGTH_SHORT).show();
+            public void postExecute(String result) throws Exception {
+                //AsyncTaskの結果を受け取って行う処理を記述する
+
+                String divisionFunc = MathDivision.MathDivision(result);
+                //数式を空白で単位分割した文字列を取得
+                String formula = LexicalAnalysis.FormulaToInfix(divisionFunc);
+                //数式が1or2変数の式であるかの判定
+                String receiveStr = FunctionTypeCheck.FunctionTypeCheckM(formula);
+
+//                //操車場アルゴリズムで数式を逆ポーランド記法に変換
+//                List<String> formulaList = ShuntingYard.ListDivision(formula);
+//                List<String> shuntingYardList = ShuntingYard.ShuntingYardAlg(formulaList);
+//                //逆ポーランド記法の計算
+//                Float[] resultNum = ReversePolishNotationOld.ReversePolishNotationOld(shuntingYardList, 1, 30);
+//                Log.d("TAG","RESULT_OK");
+//                Log.d("shuntingYardList",String.valueOf(shuntingYardList));
+//                Log.d("ReversePolishResult",String.valueOf(resultNum[0]));
+//
+//                Toast.makeText(getBaseContext(), String.valueOf(resultNum[0]), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), receiveStr, Toast.LENGTH_LONG).show();
             }
             public void progressUpdate(int progress) {
                 //だいたいプログレスダイアログを進める
@@ -60,6 +81,7 @@ public class ThumbnailActivity extends ActionBarActivity {
         });
         //アクセス先のURL
         String param1 = "http://任意";
+
         String param2 = open_filepath;
         //URLを受け渡し
         upAsync.execute(param1, param2);
