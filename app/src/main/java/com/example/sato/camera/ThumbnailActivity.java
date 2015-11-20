@@ -9,11 +9,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.example.sato.camera.FunctionCalc.FunctionTypeCheck;
-import com.example.sato.camera.FunctionCalc.LexicalAnalysis;
-import com.example.sato.camera.FunctionCalc.MathDivision;
 
 
 public class ThumbnailActivity extends ActionBarActivity {
@@ -41,6 +36,7 @@ public class ThumbnailActivity extends ActionBarActivity {
 
         //Viewへ画像をセット
         imageView.setImageBitmap(_bmp);
+
     }
 
     public void imageUploadToServer(View view){
@@ -53,12 +49,20 @@ public class ThumbnailActivity extends ActionBarActivity {
             }
             public void postExecute(String result) throws Exception {
                 //AsyncTaskの結果を受け取って行う処理を記述する
+                //resultにはサーバからの数式が返ってくる
 
-                String divisionFunc = MathDivision.MathDivision(result);
-                //数式を空白で単位分割した文字列を取得
-                String formula = LexicalAnalysis.FormulaToInfix(divisionFunc);
-                //数式が1or2変数の式であるかの判定
-                String receiveStr = FunctionTypeCheck.FunctionTypeCheckM(formula);
+                Intent intent = new Intent(getBaseContext(), GraphActivity.class);
+                //ACTION_SENDでデータを受け渡しできるようにを設定
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra("MathML",result);
+                startActivity(intent);
+
+//
+//                String divisionFunc = MathDivision.MathDivision(result);
+//                //数式を空白で単位分割した文字列を取得
+//                String formula = LexicalAnalysis.FormulaToInfix(divisionFunc);
+//                //数式が1or2変数の式であるかの判定
+//                String receiveStr = FunctionTypeCheck.FunctionTypeCheckM(formula);
 
 //                //操車場アルゴリズムで数式を逆ポーランド記法に変換
 //                List<String> formulaList = ShuntingYard.ListDivision(formula);
@@ -70,7 +74,7 @@ public class ThumbnailActivity extends ActionBarActivity {
 //                Log.d("ReversePolishResult",String.valueOf(resultNum[0]));
 //
 //                Toast.makeText(getBaseContext(), String.valueOf(resultNum[0]), Toast.LENGTH_SHORT).show();
-                Toast.makeText(getBaseContext(), receiveStr, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), receiveStr, Toast.LENGTH_LONG).show();
             }
             public void progressUpdate(int progress) {
                 //だいたいプログレスダイアログを進める
@@ -83,6 +87,12 @@ public class ThumbnailActivity extends ActionBarActivity {
         String param1 = "http://任意";
 
         String param2 = open_filepath;
+        Log.d("TAG URI",open_filepath);
+
+        //デバッグ用にpath変更
+        //param2  = "/storage/emulated/0/DCIM/Camera/TestData22.jpg";
+
+
         //URLを受け渡し
         upAsync.execute(param1, param2);
 
