@@ -4,12 +4,6 @@ package com.example.sato.camera.FunctionCalc;
 //import org.matheclipse.core.eval.ExprEvaluator;
 //import org.matheclipse.core.interfaces.IExpr;
 
-import org.matheclipse.core.eval.EvalUtilities;
-import org.matheclipse.core.expression.F;
-import org.matheclipse.core.form.output.OutputFormFactory;
-import org.matheclipse.core.form.output.StringBufferWriter;
-import org.matheclipse.core.interfaces.IExpr;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,13 +29,13 @@ public class FunctionTypeCheck {
         }
 
         //変数となる文字が2文字以上含まれているか
-        String alfabet = "abcdefghijklmnopqrstuvwxyz";
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
         int count = 0;
         int charCount = 0;
         //文字数の計測
-        while(alfabet.length() > count){
-            int i = countString(func, String.valueOf(alfabet.charAt(count)));
-            //System.out.print(alfabet.charAt(count) + " = ");
+        while(alphabet.length() > count){
+            int i = countString(func, String.valueOf(alphabet.charAt(count)));
+            //System.out.print(alphabet.charAt(count) + " = ");
             //System.out.println(i);
             if(i>0){
                 charCount++;
@@ -53,7 +47,7 @@ public class FunctionTypeCheck {
         if(charCount>2){
             //エラー処理
             resultErrorStr="変数が三つ以上あります";
-            //return resultErrorStr;
+            return resultErrorStr;
         }
 
         //従属変数となる変数が文字列に含まれているならば処理
@@ -74,20 +68,23 @@ public class FunctionTypeCheck {
 
         }
 
+        //=の削除
+        func = equalDelete(func);
+
         //古い方法
         //Symjaライブラリを利用し、式の簡単化
-        F.initSymbols(null);
-        EvalUtilities util = new EvalUtilities();
-        IExpr mathResult;
-
-        //数式の簡単化とy=の除去
-        StringBufferWriter buf = new StringBufferWriter();
-        String s = "Solve[x+2==0,x]";
-        mathResult = util.evaluate("Solve["+func+"==0,x]");
-
-        OutputFormFactory.get().convert(buf, mathResult);
-        String output = buf.toString();
-        System.out.println("Solve for x : " + func + " is " + output);
+//        F.initSymbols(null);
+//        EvalUtilities util = new EvalUtilities();
+//        IExpr mathResult;
+//
+//        //数式の簡単化とy=の除去
+//        StringBufferWriter buf = new StringBufferWriter();
+//        //String s = "Solve[x+2==0,x]";
+//        mathResult = util.evaluate("Solve["+func+"==0,x]");
+//
+//        OutputFormFactory.get().convert(buf, mathResult);
+//        String output = buf.toString();
+//        System.out.println("Solve for x : " + func + " is " + output);
 
 //        //新Symja symja-lib-yyyy-mm-dd.jarを使う方法
           //現在はライブラリの導入でエラーが起きるのとコンパイルまでに4~5分かかるので凍結
@@ -103,12 +100,19 @@ public class FunctionTypeCheck {
 //        String output=javaForm.toString();
 //        System.out.println(output);
 
-        return output;
+        return func;
     }
 
     //文字列内の文字数を数えて返す
-    private static int countString(String target, String searchWord){
+    public static int countString(String target, String searchWord){
         return target.length() - target.replaceAll(searchWord, "").length();
+    }
+
+    //イコールの削除
+    public static String equalDelete(String func){
+        int start = func.indexOf("=");
+        func = func.substring(start+1,func.length());
+        return func;
     }
 
 }
