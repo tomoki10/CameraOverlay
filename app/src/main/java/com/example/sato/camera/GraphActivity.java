@@ -31,12 +31,13 @@ public class GraphActivity extends ActionBarActivity {
         String divisionFunc = MathDivision.MathDivision(getFormula);
         //数式を空白で単位分割した文字列を取得
         //String formula = LexicalAnalysis.FormulaToInfix(divisionFunc);
-        textView.setText(divisionFunc);
+
 
         //数式が1or2変数の式であるかの判定
         try {
             String typeCheckedFunction = FunctionTypeCheck.FunctionTypeCheckM(divisionFunc);
             functionString = LexicalAnalysis.FormulaToInfix(typeCheckedFunction);
+            textView.setText(typeCheckedFunction);
             Log.d("FTCReturn", functionString);
         } catch (Exception e) {
             e.printStackTrace();
