@@ -102,6 +102,7 @@
     <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="apache-mime4j-core-0.7.2" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
+    <orderEntry type="library" exported="" name="symja-lib-2015-08-09" level="project" />
     <orderEntry type="library" exported="" name="slf4j-android-1.6.1-RC1" level="project" />
     <orderEntry type="library" exported="" name="commons-logging-1.1.1" level="project" />
   </component>

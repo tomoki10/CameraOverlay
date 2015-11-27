@@ -34,6 +34,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
 
 }
 
@@ -55,4 +58,6 @@ dependencies {
     compile files('/Users/sato/Documents/android_workspace/Camera/libs/log4j-over-slf4j-1.7.2.jar')
     compile files('/Users/sato/Documents/android_workspace/Camera/libs/commons-logging-1.1.1.jar')
     compile files('/Users/sato/Documents/android_workspace/Camera/libs/slf4j-android-1.6.1-RC1.jar')
+    compile files('/Users/sato/Documents/android_workspace/Camera/libs/symja-lib-2015-08-09.jar')
+
 }

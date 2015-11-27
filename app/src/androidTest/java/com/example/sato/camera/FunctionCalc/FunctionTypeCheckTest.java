@@ -7,10 +7,8 @@ import junit.framework.TestCase;
  */
 
 public class FunctionTypeCheckTest extends TestCase {
-    //数字が正確にカウントされているかのテスト
-    public void testCountString() throws Exception {
+    public void test数字が正確にカウントされているかのテスト() throws Exception {
         FunctionTypeCheck ftc = new FunctionTypeCheck();
-        //成功
         assertEquals(ftc.countString("xxxyyy+123","x"),3);
         assertEquals(ftc.countString("xxx  yyy +123","x"),3);
         assertEquals(ftc.countString("xyx y y+x+123","x"),3);
@@ -20,30 +18,28 @@ public class FunctionTypeCheckTest extends TestCase {
     public void test入力された数式が正しいか確認() throws Exception {
         FunctionTypeCheck ftc = new FunctionTypeCheck();
 
-        assertEquals(ftc.FunctionTypeCheckM("2x+4"), "2x+4");
-        assertEquals(ftc.FunctionTypeCheckM("y=2x+4"), "2x+4");
-        assertEquals(ftc.FunctionTypeCheckM("2y=2x+4"),"2x+4");
-        assertEquals(ftc.FunctionTypeCheckM("2y+4=2x+4"),"2x+4");
-        assertEquals(ftc.FunctionTypeCheckM("2y+4=-2x+4"),"-2x+4");
+        //対応している数式のチェック
+        assertEquals(ftc.FunctionTypeCheckM("2y=2x+4"), "2+x");
+        assertEquals(ftc.FunctionTypeCheckM("y=2x+4"),"4+2*x");
+        assertEquals(ftc.FunctionTypeCheckM("y=2x+3x+4+4"),"8+5*x");
+        assertEquals(ftc.FunctionTypeCheckM("2y+x+4=2x+3x+4+4"),"2+2*x");
+        assertEquals(ftc.FunctionTypeCheckM("2u+x+4=2x+3x+4+4"),"2+2*x");
 
-        assertEquals(ftc.FunctionTypeCheckM("y=1/2x+4"),"1/2x+4");
-
-        //現在は関数を返すように変更しているのでチェックできない
-//        assertEquals(ftc.FunctionTypeCheckM("2x+4"), "{{x->-2}}");
-//        assertEquals(ftc.FunctionTypeCheckM("y=2x+4"),"{{x->-2}}");
-//        assertEquals(ftc.FunctionTypeCheckM("y=2x+3x+4"),"{{x->-4/5}}");
-//        assertEquals(ftc.FunctionTypeCheckM("y=2x+3x+4+4"),"{{x->-8/5}}");
-        //うまく計算できない例(左辺が考慮されない)
-        //assertEquals(ftc.FunctionTypeCheckM("2y=2x+3x+4+4"),"{{x->-8/5}}");
-        //assertEquals(ftc.FunctionTypeCheckM("2y+4=2x+3x+4+4"),"{{x->-8/5}}");
-
-        //assertEquals(ftc.FunctionTypeCheckM("2x+4=0"),"{{x->-2}}");
+        //入力数式がエラーの場合のチェック
+        assertEquals(ftc.FunctionTypeCheckM("2+3+5"),"変数がありません");
+        assertEquals(ftc.FunctionTypeCheckM("2x+a+b=0"),"変数が三つ以上あります");
     }
 
-    public void testEqualDelete() throws Exception {
+//    public void testEqualDelete() throws Exception {
+//        FunctionTypeChecker ftc = new FunctionTypeChecker();
+//        assertEquals(ftc.equalAdd("y=2x+4"), "y==2x+4");
+//        assertEquals(ftc.equalAdd("2y=2x+4"), "2y==2x+4");
+//    }
+
+    public void testDependentVariableDelete() throws Exception{
         FunctionTypeCheck ftc = new FunctionTypeCheck();
-        assertEquals(ftc.equalDelete("y=2x+4"), "2x+4");
-        assertEquals(ftc.equalDelete("2y=2x+4"), "2x+4");
+        assertEquals(ftc.dependentVariableDelete("{{y->2+x}}"), "2+x");
+        assertEquals(ftc.dependentVariableDelete("{{y->4+2*x}}"), "4+2*x");
     }
 
 }

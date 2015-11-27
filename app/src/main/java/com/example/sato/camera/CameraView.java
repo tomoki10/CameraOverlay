@@ -11,6 +11,9 @@ import java.io.IOException;
 /**
  * Created by tomoki on 2015/07/06.
  */
+//カメラプレビューを表示するView
+//2015/11/29現在ではandroid.hardware.cameraが非推奨になっているので
+//android.hardware.camera2を使うべきかも
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     private SurfaceHolder mHolder;
@@ -18,26 +21,27 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     public CameraView(Context context, Camera camera) {
         super(context);
+        Log.d("Surface", "Create Constructor");
         mCamera = camera;
         mCamera.setDisplayOrientation(90);
-        //Zoom処理 デフォのサイズでは教科書の小さい数字がうまく写せないので事前に拡大表示する
-        Camera.Parameters prm = mCamera.getParameters();
-        prm.setVideoStabilization(true);            //手振れ補正
-        Log.d("Option", "getMaxZoom " + prm.getMaxZoom());
-        prm.setZoom(17);
-        mCamera.setParameters(prm);
+        mCamera = cameraParamSetting(mCamera);
         mHolder = getHolder();
         mHolder.addCallback(this);
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.d("Surface", "surfaceCreated");
         try{
             if(mCamera == null) {
+                Log.d("Surface", "mCamera==null");
+                //戻るボタンで画面がCameraActivityに戻るときにコンストラクタが生成されないので
+                //ここに同様の処理を記述
                 mCamera = Camera.open();
                 mCamera.setDisplayOrientation(90);
                 mHolder = getHolder();
                 mHolder.addCallback(this);
+                mCamera = cameraParamSetting(mCamera);
             }
             //mCamera.stopPreview();
             if (mCamera != null) {
@@ -52,6 +56,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d("Surface", "surfaceChanged");
         if(mHolder.getSurface() == null)
             return;
         try{
@@ -71,14 +76,18 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        //our app has only one screen, so we'll destroy the camera in the surface
-        //if you are unsing with more screens, please move this code your activity
-
+        Log.d("Surface", "surfaceDestroyed");
         mCamera.stopPreview();
-        mCamera.release();
-        mCamera = null;
     }
 
-
-
+    //数式撮影するために最適な画面拡大サイズや手振れ補正などを設定
+    private Camera cameraParamSetting(Camera camera){
+        //Zoom処理 デフォのサイズでは教科書の小さい数字がうまく写せないので事前に拡大表示する
+        Camera.Parameters prm = camera.getParameters();
+        prm.setVideoStabilization(true);            //手振れ補正
+        Log.d("Option", "getMaxZoom " + prm.getMaxZoom());
+        prm.setZoom(17);
+        camera.setParameters(prm);
+        return camera;
+    }
 }

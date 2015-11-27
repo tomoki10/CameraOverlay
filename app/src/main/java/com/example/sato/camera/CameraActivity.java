@@ -33,7 +33,8 @@ public class CameraActivity extends ActionBarActivity {
 
     private Camera mCamera = null;
     private CameraView mCameraView = null;
-    private TrimView trimView = null;
+    //private TrimView trimView = null;
+    ArrayList<Integer> _al;
     Bitmap _bmp;
 
     //Viewのサイズ
@@ -110,13 +111,24 @@ public class CameraActivity extends ActionBarActivity {
         return false;
     }
 
+    //
+    private boolean onWindowFocusChangedIsInitialized = false;
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        // インスタンス生成は１回だけで良いのに、
+        // さまざまな場面onWindowFocusChangedが呼ばれるためフラグを設定
+        synchronized(this) {
+            if (onWindowFocusChangedIsInitialized == true) {
+                return;
+            }
+        }
         //トリミング領域の描画
         LinearLayout trim_view = (LinearLayout)findViewById(com.example.sato.camera.R.id.trim_view);
         FrameLayout camera_view = (FrameLayout) findViewById(com.example.sato.camera.R.id.camera_view);
-        trimView = new TrimView(getApplicationContext());
+        final TrimView trimView = new TrimView(getApplicationContext());//trimView.getInstance(this.getApplicationContext());
         trim_view.addView(trimView);
+
         trimView.sizeSet(trim_view.getWidth(), trim_view.getHeight());
 
         //同じサイズになるのを確認
@@ -131,11 +143,14 @@ public class CameraActivity extends ActionBarActivity {
         ((ImageButton)findViewById(R.id.imageButton)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mCamera.autoFocus(mAutoFocusListener);
+                //トリミングするサイズを指定
+                _al = trimView.getTrimData();
             }
         });
-
-        super.onWindowFocusChanged(hasFocus);
+        onWindowFocusChangedIsInitialized = true;
     }
+
+
 
     private Camera.AutoFocusCallback mAutoFocusListener = new Camera.AutoFocusCallback() {
         public void onAutoFocus(boolean success, Camera camera) {
@@ -144,7 +159,6 @@ public class CameraActivity extends ActionBarActivity {
                 camera.autoFocus(null);
             }
             // 撮影
-            final ArrayList<Integer> _al = trimView.getTrimData();
             mCamera.takePicture(null, null, new Camera.PictureCallback() {
                 @Override
                 public void onPictureTaken(byte[] data, Camera camera) {
@@ -217,10 +231,8 @@ public class CameraActivity extends ActionBarActivity {
         }
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mCamera.setPreviewCallback(null);
-//        mCamera.release();
-//    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 }

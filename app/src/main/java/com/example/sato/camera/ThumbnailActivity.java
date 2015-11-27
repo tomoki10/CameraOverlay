@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 public class ThumbnailActivity extends ActionBarActivity {
@@ -81,10 +82,12 @@ public class ThumbnailActivity extends ActionBarActivity {
             }
             public void cancel() {
                 //キャンセルされた時になんかする
+                Toast.makeText(getBaseContext(), "AAA", Toast.LENGTH_LONG).show();
             }
         });
         //アクセス先のURL
         String param1 = "http://任意";
+
 
         String param2 = open_filepath;
         Log.d("TAG URI",open_filepath);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,35 +13,47 @@ import java.util.ArrayList;
 
 public class TrimView extends View {
 
-	public float _x = 0, _y = 0;
+    private static TrimView instance = null;
+
+	private float _x = 0, _y = 0;
     Paint paint1;
     Paint paint2;
     Paint paint3;
     int pointSize = 15;
         
     public TrimView(Context context) {
-    	super(context);
+        super(context);
+        Log.d("LifeCycle","Trimview Instance Created");
         paint1 = new Paint();
         paint1.setColor(0xcc000000);
         paint1.setAntiAlias(true);
-        
+
         paint2 = new Paint();
-        paint2.setStyle(Style.STROKE);
+        paint2.setStyle(Paint.Style.STROKE);
         paint2.setColor(Color.RED);
-        
+
         paint3 = new Paint();
         paint3.setAntiAlias(true);
         paint3.setColor(Color.RED);
+
+        instance = null;
     }
 
-        int _w = 0;
-        int _h = 0;
-        //widthとheightの長さ
-        int sqWidth = 0;
-        int sqHeight = 0;
-        //中心
-        int sqX = 0;
-        int sqY = 0;
+    public static TrimView getInstance(Context context) {
+        if(instance == null){
+            instance = new TrimView(context);
+        }
+        return instance;
+    }
+
+    int _w;
+    int _h;
+    //widthとheightの長さ
+    int sqWidth;
+    int sqHeight;
+    //中心
+    int sqX;
+    int sqY;
         
         
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
